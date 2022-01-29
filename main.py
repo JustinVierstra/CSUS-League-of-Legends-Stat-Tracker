@@ -26,6 +26,9 @@ puuid = response.json()['puuid']
 
 matches = requests.get(f"https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?queue={queue}&count=10&api_key={API_KEY}")
 
+print("Response: " + str(response))
+print("Matches: " + str(matches))
+
 possibleNewGames = []
 possibleNewGames = matches.json()
 pastGames = []
@@ -56,8 +59,15 @@ else:
 def kda(k,d,a):
     return round((k + a)/d,2) if d else round((k + a)/1, 2)
 
-print("Response: " + str(response))
-print("Matches: " + str(matches))
+def gameResult(result):
+    if result == True:
+        return 1
+    return 0
+
+def firstBlood(first_blood):
+    if first_blood == True:
+        return 1
+    return 0
 
 allStats = []
 for game in actuallyNew:
@@ -68,8 +78,8 @@ for game in actuallyNew:
         playerData = matchData.json()['info']['participants'][i]
         row = [playerData['summonerName'], playerData['championName'], playerData['kills'],
         playerData['deaths'], playerData['assists'], kda(playerData['kills'], playerData['deaths'], playerData['assists']), playerData['totalMinionsKilled'], 
-        playerData['totalDamageDealtToChampions'], playerData['firstBloodKill'], playerData['visionScore'], 
-        playerData['wardsPlaced'], playerData['wardsKilled'], playerData['visionWardsBoughtInGame'], playerData['lane'], 0, matchData.json()['info']['gameDuration'], playerData['win'], playerData['teamId']]
+        playerData['totalDamageDealtToChampions'], firstBlood(playerData['firstBloodKill']), playerData['visionScore'], 
+        playerData['wardsPlaced'], playerData['wardsKilled'], playerData['visionWardsBoughtInGame'], playerData['lane'], 0, matchData.json()['info']['gameDuration'], gameResult(playerData['win']), playerData['teamId']]
         allStats.append(row)
 
 with open("stats.csv", "a", newline='') as f:
