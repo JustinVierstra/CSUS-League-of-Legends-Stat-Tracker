@@ -29,11 +29,6 @@ matches = requests.get(f"https://americas.api.riotgames.com/lol/match/v5/matches
 championList = requests.get("http://ddragon.leagueoflegends.com/cdn/12.2.1/data/en_US/champion.json")
 crd = championList.json()['data']
 
-def getChampName(id):
-    for i in crd:
-        if(crd[i]["key"] == str(id)):
-            return i
-
 print("Response: " + str(response))
 print("Matches: " + str(matches))
 
@@ -62,7 +57,12 @@ if pastGames:
 else:
     actuallyNew = possibleNewGames
     pastGames = possibleNewGames
-        
+    
+def getChampName(id):
+    for i in crd:
+        if(crd[i]["key"] == str(id)):
+            return i
+            
 def kda(k,d,a):
     return round((k + a)/d,2) if d else round((k + a)/1, 2)
 
@@ -98,8 +98,7 @@ def role(roleId):
     elif roleId == 3:
         return "Adc"
     elif roleId == 4:
-        return "Support"
-
+        return "Support"    
 
 allStats = []
 count = 0
@@ -136,8 +135,6 @@ for game in actuallyNew:
         allStats.append(row)
     print(game + " added to spreadsheet")
 
-
-
 with open("stats.csv", "a", newline='') as f:
     writer = csv.writer(f)
     writer.writerows(allStats)
@@ -147,4 +144,3 @@ f = open("gameList.txt", "w")
 for n in pastGames:
     f.write(n + "\n")
 f.close()
-
