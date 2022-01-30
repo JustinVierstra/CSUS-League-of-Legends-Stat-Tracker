@@ -106,7 +106,6 @@ count = 0
 allStats.append(["Player Name:", "Champion:", "Kills:", "Deaths:", "Assists:", "KDA:", "KP:", "CS:", "Damage:", "Gold Earned:", "First Blood:", "Vision Score:", "Wards Placed:", "Wards Killed:", "Pink Wards:", "Role:", "Team ID:", "Game Length:", "Game Result:", "Side:", "", "Bans:"])
 for game in actuallyNew:
     matchData = requests.get(f"https://americas.api.riotgames.com/lol/match/v5/matches/{game}?api_key={API_KEY}")
-    print(game + " added to spreadsheet")
     if count!=0:
         allStats.append([])
     else:
@@ -135,6 +134,7 @@ for game in actuallyNew:
         playerData['totalDamageDealtToChampions'], playerData['goldEarned'], firstBlood(playerData['firstBloodKill']), playerData['visionScore'], 
         playerData['wardsPlaced'], playerData['wardsKilled'], playerData['visionWardsBoughtInGame'], role(i%5), 0, gameDuration, gameResult(playerData['win']), side(playerData['teamId']), "", getChampName(banData)]
         allStats.append(row)
+    print(game + " added to spreadsheet")
 
 
 
