@@ -102,10 +102,15 @@ def role(roleId):
 
 
 allStats = []
+count = 0
+allStats.append(["Player Name:", "Champion:", "Kills:", "Deaths:", "Assists:", "KDA:", "KP:", "CS:", "Damage:", "Gold Earned:", "First Blood:", "Vision Score:", "Wards Placed:", "Wards Killed:", "Pink Wards:", "Role:", "Team ID:", "Game Length:", "Game Result:", "Side:", "", "Bans:"])
 for game in actuallyNew:
     matchData = requests.get(f"https://americas.api.riotgames.com/lol/match/v5/matches/{game}?api_key={API_KEY}")
     print(game + " added to spreadsheet")
-    allStats.append(["Player Name:", "Champion:", "Kills:", "Deaths:", "Assists:", "KDA:", "KP:", "CS:", "Damage:", "Gold Earned:", "First Blood:", "Vision Score:", "Wards Placed:", "Wards Killed:", "Pink Wards:", "Role:", "Team ID:", "Game Length:", "Game Result:", "Side:", "", "Bans:"])
+    if count!=0:
+        allStats.append([])
+    else:
+        count+=1
     side1TotalKills = 0
     side2TotalKills = 0
 
@@ -125,7 +130,7 @@ for game in actuallyNew:
             banData = matchData.json()['info']['teams'][0]['bans'][i]['championId']
         else:
             banData = matchData.json()['info']['teams'][1]['bans'][i%5]['championId']
-        row = [playerData['summonerName'], playerData['championName'], playerData['kills'],
+        row = [playerData['summonerName'].center(15), playerData['championName'], playerData['kills'],
         playerData['deaths'], playerData['assists'], kda(playerData['kills'], playerData['deaths'], playerData['assists']), kp(playerData['kills'],playerData['assists'], i),playerData['totalMinionsKilled'] + playerData['neutralMinionsKilled'], 
         playerData['totalDamageDealtToChampions'], playerData['goldEarned'], firstBlood(playerData['firstBloodKill']), playerData['visionScore'], 
         playerData['wardsPlaced'], playerData['wardsKilled'], playerData['visionWardsBoughtInGame'], role(i%5), 0, gameDuration, gameResult(playerData['win']), side(playerData['teamId']), "", getChampName(banData)]
