@@ -76,11 +76,30 @@ def firstBlood(first_blood):
         return 1
     return 0
 
-def kp(kills, team):
+def kp(kills, assists, team):
     if(team<5):
-        return str(round(kills/side1TotalKills*100, 2)) + "%"
+        return str(round((kills+assists)/side1TotalKills*100, 2)) + "%"
     else:
-        return str(round(kills/side2TotalKills*100, 2)) + "%"
+        return str(round((kills+assists)/side2TotalKills*100, 2)) + "%"
+
+def side(whichSide):
+    if whichSide == 100:
+        return "Red"
+    else:
+        return "Blue"
+        
+def role(roleId):
+    if roleId == 0:
+        return "Top"
+    elif roleId == 1:
+        return "Jungle"
+    elif roleId == 2:
+        return "Mid"
+    elif roleId == 3:
+        return "Adc"
+    elif roleId == 4:
+        return "Support"
+
 
 allStats = []
 for game in actuallyNew:
@@ -89,6 +108,8 @@ for game in actuallyNew:
     allStats.append(["Player Name:", "Champion:", "Kills:", "Deaths:", "Assists:", "KDA:", "KP:", "CS:", "Damage:", "Gold Earned:", "First Blood:", "Vision Score:", "Wards Placed:", "Wards Killed:", "Pink Wards:", "Role:", "Team ID:", "Game Length:", "Game Result:", "Side:", "", "Bans:"])
     side1TotalKills = 0
     side2TotalKills = 0
+
+    gameDuration = round((matchData.json()['info']['gameDuration'])/60,2)
 
     for i in range(0,10):
         playerData = matchData.json()['info']['participants'][i]
@@ -105,10 +126,12 @@ for game in actuallyNew:
         else:
             banData = matchData.json()['info']['teams'][1]['bans'][i%5]['championId']
         row = [playerData['summonerName'], playerData['championName'], playerData['kills'],
-        playerData['deaths'], playerData['assists'], kda(playerData['kills'], playerData['deaths'], playerData['assists']), kp(playerData['kills'], i),playerData['totalMinionsKilled'], 
+        playerData['deaths'], playerData['assists'], kda(playerData['kills'], playerData['deaths'], playerData['assists']), kp(playerData['kills'],playerData['assists'], i),playerData['totalMinionsKilled'] + playerData['neutralMinionsKilled'], 
         playerData['totalDamageDealtToChampions'], playerData['goldEarned'], firstBlood(playerData['firstBloodKill']), playerData['visionScore'], 
-        playerData['wardsPlaced'], playerData['wardsKilled'], playerData['visionWardsBoughtInGame'], playerData['lane'], 0, matchData.json()['info']['gameDuration'], gameResult(playerData['win']), playerData['teamId'], "", getChampName(banData)]
+        playerData['wardsPlaced'], playerData['wardsKilled'], playerData['visionWardsBoughtInGame'], role(i%5), 0, gameDuration, gameResult(playerData['win']), side(playerData['teamId']), "", getChampName(banData)]
         allStats.append(row)
+
+
 
 with open("stats.csv", "a", newline='') as f:
     writer = csv.writer(f)
