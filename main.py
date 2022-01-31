@@ -1,5 +1,3 @@
-from operator import indexOf
-from types import resolve_bases
 from dotenv import load_dotenv
 import requests
 import os
@@ -8,6 +6,11 @@ import gspread
 load_dotenv()
 
 API_KEY = os.getenv("API_KEY")
+
+sa = gspread.service_account(filename="client_secret.json")
+sh = sa.open("Sac State Green 2022")
+
+statSheet = sh.worksheet("Master Sheet")
 
 while not API_KEY:
     url = "https://developer.riotgames.com/"
@@ -100,21 +103,14 @@ def role(roleId):
     elif roleId == 4:
         return "Support"    
 
-allStats = []
-count = 0
-sa = gspread.service_account(filename="client_secret.json")
-sh = sa.open("Sac State Green 2022")
-
-statSheet = sh.worksheet("Master Sheet")
-    
+allStats = []    
 for game in actuallyNew:
-    matchData = requests.get(f"https://americas.api.riotgames.com/lol/match/v5/matches/{game}?api_key={API_KEY}")
-    if count!=0:
-        allStats.append(["Player Name:", "Champion:", "Kills:", "Deaths:", "Assists:", "KDA:", "KP:", "CS:", "Damage:", "Gold Earned:", "First Blood:", "Vision Score:", "Wards Placed:", "Wards Killed:", "Pink Wards:", "Role:", "Team ID:", "Game Length:", "Game Result:", "Side:", "", "Bans:"])
-    else:
-        count+=1
     side1TotalKills = 0
     side2TotalKills = 0
+
+    matchData = requests.get(f"https://americas.api.riotgames.com/lol/match/v5/matches/{game}?api_key={API_KEY}")
+
+    allStats.append(["Player Name:", "Champion:", "Kills:", "Deaths:", "Assists:", "KDA:", "KP:", "CS:", "Damage:", "Gold Earned:", "First Blood:", "Vision Score:", "Wards Placed:", "Wards Killed:", "Pink Wards:", "Role:", "Team ID:", "Game Length:", "Game Result:", "Side:", "", "Bans:"])
 
     gameDuration = round((matchData.json()['info']['gameDuration'])/60,2)
 
