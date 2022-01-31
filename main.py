@@ -2,8 +2,8 @@ from operator import indexOf
 from types import resolve_bases
 from dotenv import load_dotenv
 import requests
-import csv
 import os
+import gspread
 
 load_dotenv()
 
@@ -102,11 +102,15 @@ def role(roleId):
 
 allStats = []
 count = 0
-allStats.append(["Player Name:", "Champion:", "Kills:", "Deaths:", "Assists:", "KDA:", "KP:", "CS:", "Damage:", "Gold Earned:", "First Blood:", "Vision Score:", "Wards Placed:", "Wards Killed:", "Pink Wards:", "Role:", "Team ID:", "Game Length:", "Game Result:", "Side:", "", "Bans:"])
+sa = gspread.service_account(filename="client_secret.json")
+sh = sa.open("Sac State Green 2022")
+
+statSheet = sh.worksheet("Master Sheet")
+    
 for game in actuallyNew:
     matchData = requests.get(f"https://americas.api.riotgames.com/lol/match/v5/matches/{game}?api_key={API_KEY}")
     if count!=0:
-        allStats.append([])
+        allStats.append(["Player Name:", "Champion:", "Kills:", "Deaths:", "Assists:", "KDA:", "KP:", "CS:", "Damage:", "Gold Earned:", "First Blood:", "Vision Score:", "Wards Placed:", "Wards Killed:", "Pink Wards:", "Role:", "Team ID:", "Game Length:", "Game Result:", "Side:", "", "Bans:"])
     else:
         count+=1
     side1TotalKills = 0
@@ -135,10 +139,7 @@ for game in actuallyNew:
         allStats.append(row)
     print(game + " added to spreadsheet")
 
-with open("stats.csv", "a", newline='') as f:
-    writer = csv.writer(f)
-    writer.writerows(allStats)
-f.close()
+statSheet.append_rows(allStats, table_range="A1")
 
 f = open("gameList.txt", "w")
 for n in pastGames:

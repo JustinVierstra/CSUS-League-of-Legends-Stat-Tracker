@@ -578,3 +578,4 @@ FodyWeavers.xsd
 # End of https://www.toptal.com/developers/gitignore/api/python,visualstudio,windows
 gameList.txt
 stats.csv
+client_secret.json
